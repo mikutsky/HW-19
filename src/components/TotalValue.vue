@@ -1,5 +1,7 @@
 <template>
-  <div class="total-value">{{ total }}</div>
+  <!-- (2.) Подсвечивать красным total value если значение меньше нуля,
+  зеленым если больше нуля и если ноль то черным-->
+  <div class="total-value" v-bind:class="[{ green: total>0 },{ red: total<0 }]">{{ total }}</div>
 </template>
 
 <script>
@@ -7,7 +9,9 @@ export default {
   name: 'TotalValue',
   props: {
     total: {
-      type: String | Number,
+      // Тип String больше не пригодится
+      // type: String | Number,
+      type: Number,
       default: 0
     }
   }

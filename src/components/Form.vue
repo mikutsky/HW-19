@@ -3,8 +3,8 @@
     <ElForm :model="formData" ref="addNewItemForm" :rules="rules" label-position="top">
       <ElFormItem label="Type" prop="type">
         <ElSelect class="type-select" v-model="formData.type" placeholder="Choose type...">
-          <ElOption label="Income" value="INCOME"/>
-          <ElOption label="Outcome" value="OUTCOME"/>
+          <ElOption label="Income" value="INCOME" />
+          <ElOption label="Outcome" value="OUTCOME" />
         </ElSelect>
       </ElFormItem>
       <ElFormItem label="Comments" prop="comment">
@@ -21,7 +21,7 @@
 <script>
 function customNumValidator (rule, value, callback) {
   if (value === 0) {
-    return callback(new Error('Число должно быть больше нуля'))
+    return callback(new Error('Value must not be zero'))
   }
   callback()
 }
@@ -43,7 +43,11 @@ export default {
       ],
       value: [
         { required: true, message: 'Value is required', trigger: 'change' },
-        { type: 'number', message: 'Value must be a number', trigger: 'change' },
+        {
+          type: 'number',
+          message: 'Value must be a number',
+          trigger: 'change'
+        },
         { validator: customNumValidator, trigger: 'change' }
       ]
     }
@@ -51,8 +55,16 @@ export default {
   methods: {
     onSubmit (e) {
       e.preventDefault()
-      this.$refs.addNewItemForm.validate((valid) => {
+      this.$refs.addNewItemForm.validate(valid => {
         if (valid) {
+          // 3. При добавление расхода/дохода  автоматически добалять минус к числу
+          // если пользователь добавляет расход
+          if (this.formData.type === 'INCOME' && this.formData.value < 0) {
+            this.formData.value *= -1
+          }
+          if (this.formData.type === 'OUTCOME' && this.formData.value > 0) {
+            this.formData.value *= -1
+          }
           this.$emit('submitForm', { ...this.formData })
           this.$refs.addNewItemForm.resetFields()
         }
